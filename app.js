@@ -14,6 +14,9 @@ var camps = [
     { name: "Salmon Creek", image: "/image1.png" },
     { name: "Granite Mountain", image: "/image2.png" },
     { name: "Mountain's Rest", image: "/image3.png" },
+    { name: "Salmon Creek", image: "/image1.png" },
+    { name: "Granite Mountain", image: "/image2.png" },
+    { name: "Mountain's Rest", image: "/image3.png" }
 ];
 
 //ROUTES
