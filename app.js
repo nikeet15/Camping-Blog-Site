@@ -2,8 +2,7 @@
 
 //APP CONFIG............
 var express = require("express");
-var app = express();    
-                             // express() return an object 
+var app = express();                                // express() return an object 
 var bodyparser = require("body-parser");
 app.use(bodyparser.urlencoded({ extended: true }));
 
