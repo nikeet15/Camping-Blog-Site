@@ -5,6 +5,7 @@ var express = require("express");                                // express() re
 var mongoose = require("mongoose");
 var bodyparser = require("body-parser");
 var Campground = require("./models/campground")
+var seedDB= require("./seeds");
 
 var app = express();
 app.use(bodyparser.urlencoded({ extended: true }));
@@ -19,17 +20,7 @@ mongoose.connect('mongodb://localhost:27017/Camps', { useNewUrlParser: true, use
         console.log("error in DB cnnection" + err);
 });
 
-// Campground.create({
-//     name: "Mountain's Rest",
-//     image: "/image3.png"
-// }, (err, newCamp)=>{
-
-//     if(err)
-//         console.log("error in adding to DB");
-
-//     else
-//         console.log(newCamp);
-// })
+seedDB();
 
 //ROUTES
 app.get("/", (req, res)=>{
@@ -73,7 +64,7 @@ app.post("/campgrounds", (req,res)=>{
 });
 
 app.get("/campgrounds/:id", (req,res)=>{                               // note campgrounds/new matches also to :id 
-    Campground.findById(req.params.id, (err, foundCampground)=>{     // hence must be defined above
+    Campground.findById(req.params.id).populate("comments").exec(function(err, foundCampground){     // hence must be defined above
         if(err){
             console.log("error finding camp from DB")
         }
