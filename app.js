@@ -35,13 +35,13 @@ app.get("/campgrounds", (req,res)=>{
 
         else{
             console.log("find all camps successfull")
-            res.render("index", { campgrounds: campgrounds });
+            res.render("./campgrounds/index", { campgrounds: campgrounds });
         }
     });
 });
 
 app.get("/campgrounds/new", (req, res)=>{
-    res.render("new");
+    res.render("./campgrounds/new");
 });
 
 app.post("/campgrounds", (req,res)=>{
@@ -71,11 +71,27 @@ app.get("/campgrounds/:id", (req,res)=>{                               // note c
 
         else{
             console.log(foundCampground);
-            res.render("show", {campground: foundCampground});
+            res.render("./campgrounds/show", {campground: foundCampground});
         }
     });                           
 
 });
+
+//Coments routes
+app.get("/campgrounds/:id/comments/new", (req,res)=>{
+    Campground.findById(req.params.id, (err, foundCampground)=>{
+        if(err)
+            console.log("error in finding a camp");
+        
+        else{
+            console.log("found camp- "+ foundCampground);
+            res.render("./comments/new", {campground: foundCampground});
+        }
+    })
+    
+    
+});
+
 
 //starting server code..............................
 app.listen(3000, function () {

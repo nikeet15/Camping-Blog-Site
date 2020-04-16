@@ -6,7 +6,7 @@ var Comment= require("./models/comment")
 // raw campground data
 var data= [
         {
-            name: "Clouds's Rest",
+            name: "Cloud's Rest",
             image: "/image1.png",
             description: "jhbukjnancjkanc"
         },
