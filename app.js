@@ -4,6 +4,7 @@
 var express = require("express");                                // express() return an object 
 var mongoose = require("mongoose");
 var bodyparser = require("body-parser");
+var Campground = require("./models/campground")
 
 var app = express();
 app.use(bodyparser.urlencoded({ extended: true }));
@@ -17,15 +18,6 @@ mongoose.connect('mongodb://localhost:27017/Camps', { useNewUrlParser: true, use
     else
         console.log("error in DB cnnection" + err);
 });
-
-//schema--
-var campgroundSchema= new mongoose.Schema({
-    name: String,
-    image: String,
-    description: String
-});
-
-var Campground = mongoose.model("Campground", campgroundSchema);
 
 // Campground.create({
 //     name: "Mountain's Rest",
