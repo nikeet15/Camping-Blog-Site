@@ -1,22 +1,43 @@
 //Ctrl+j to toggle terminal
 
 //APP CONFIG............
-var express = require("express");
-var app = express();                                // express() return an object 
+var express = require("express");                                // express() return an object 
+var mongoose = require("mongoose");
 var bodyparser = require("body-parser");
-app.use(bodyparser.urlencoded({ extended: true }));
 
+var app = express();
+app.use(bodyparser.urlencoded({ extended: true }));
 app.use(express.static("public"));                  //making public a static directory
 app.set("view engine", "ejs");                      //if written no need to write .ejs only write name of file
 
-var camps = [
-    { name: "Salmon Creek", image: "/image1.png" },
-    { name: "Granite Mountain", image: "/image2.png" },
-    { name: "Mountain's Rest", image: "/image3.png" },
-    { name: "Salmon Creek", image: "/image1.png" },
-    { name: "Granite Mountain", image: "/image2.png" },
-    { name: "Mountain's Rest", image: "/image3.png" }
-];
+mongoose.connect('mongodb://localhost:27017/Camps', { useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false }, function (err) {
+    if (!err)
+        console.log("Database connection successfull");
+
+    else
+        console.log("error in DB cnnection" + err);
+});
+
+//schema--
+var campgroundSchema= new mongoose.Schema({
+    name: String,
+    image: String,
+    description: String
+});
+
+var Campground = mongoose.model("Campground", campgroundSchema);
+
+// Campground.create({
+//     name: "Mountain's Rest",
+//     image: "/image3.png"
+// }, (err, newCamp)=>{
+
+//     if(err)
+//         console.log("error in adding to DB");
+
+//     else
+//         console.log(newCamp);
+// })
 
 //ROUTES
 app.get("/", (req, res)=>{
@@ -24,7 +45,16 @@ app.get("/", (req, res)=>{
 });
 
 app.get("/campgrounds", (req,res)=>{
-    res.render("campgrounds", {camps: camps});
+    Campground.find({}, (err, campgrounds)=>{
+
+        if(err)
+            console.log("error finding all camps from DB");
+
+        else{
+            console.log("find all camps successfull")
+            res.render("index", { campgrounds: campgrounds });
+        }
+    });
 });
 
 app.get("/campgrounds/new", (req, res)=>{
@@ -32,13 +62,37 @@ app.get("/campgrounds/new", (req, res)=>{
 });
 
 app.post("/campgrounds", (req,res)=>{
-    var name= req.body.name;
-    var image= req.body.image;
-    var newcamp= {name: name, image: image};
-    camps.push(newcamp);
+    Campground.create({
+        name: req.body.campground.name,
+        image: req.body.campground.image,
+        description: req.body.campground.description
+
+    }, (err, newCamp)=>{
+        if(err)
+            console.log("error in adding to DB");
+ 
+        else{
+            console.log("added"+ newCamp.name+ "to DB");
+            console.log(newCamp);
+        }
+    });
     
     res.redirect("/campgrounds");
-})
+});
+
+app.get("/campgrounds/:id", (req,res)=>{                               // note campgrounds/new matches also to :id 
+    Campground.findById(req.params.id, (err, foundCampground)=>{     // hence must be defined above
+        if(err){
+            console.log("error finding camp from DB")
+        }
+
+        else{
+            console.log(foundCampground);
+            res.render("show", {campground: foundCampground});
+        }
+    });                           
+
+});
 
 //starting server code..............................
 app.listen(3000, function () {
