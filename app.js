@@ -96,7 +96,7 @@ app.get("/campgrounds/:id", (req,res)=>{                               // note c
 });
 
 // Coments routes
-app.get("/campgrounds/:id/comments/new", (req,res)=>{
+app.get("/campgrounds/:id/comments/new", isLoggedIn, (req,res)=>{
     Campground.findById(req.params.id, (err, foundCampground)=>{
         if(err)
             console.log("error in finding a camp");
@@ -109,7 +109,7 @@ app.get("/campgrounds/:id/comments/new", (req,res)=>{
     })
 });
 
-app.post("/campgrounds/:id/comments", (req,res)=>{
+app.post("/campgrounds/:id/comments", isLoggedIn, (req,res)=>{
     // create a new comment
     // find campground and push comment to it
     // redirect to campground show page
@@ -158,6 +158,33 @@ app.post("/register", (req, res)=>{
     });
 });
 
+app.get("/login", (req, res)=>{
+    res.render("login");
+});
+
+app.post("/login", passport.authenticate("local", 
+    {
+        successRedirect: "/campgrounds",
+        failureRedirect: "/login"
+    }), (req,res)=>{
+            console.log("login successsfull");
+        
+});
+
+app.get("/logout", (req, res)=>{
+    req.logout();
+    res.redirect("/campgrounds");
+})
+
+// MIDDLEWARE
+
+function isLoggedIn(req, res, next){
+    if(req.isAuthenticated())
+        return next();
+
+    else
+        res.redirect("/login");
+}
 
 //starting server code..............................
 app.listen(3000, function () {
