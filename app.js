@@ -10,7 +10,7 @@ var seedDB= require("./seeds");
 
 var app = express();
 app.use(bodyparser.urlencoded({ extended: true }));
-app.use(express.static("public"));                  //making public a static directory
+app.use(express.static(__dirname+ "/public"));                  //making public a static directory
 app.set("view engine", "ejs");                      //if written no need to write .ejs only write name of file
 
 mongoose.connect('mongodb://localhost:27017/Camps', { useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false }, function (err) {
