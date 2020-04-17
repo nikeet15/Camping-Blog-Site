@@ -1,7 +1,7 @@
 //Ctrl+j to toggle terminal
 
 //APP CONFIG............
-var express = require("express");                                // express() return an object 
+var express = require("express");                                               // express() return an object 
 var mongoose = require("mongoose");
 var bodyparser = require("body-parser");
 var passport = require("passport");
@@ -13,9 +13,10 @@ var seedDB = require("./seeds");
 
 var app = express();
 app.use(bodyparser.urlencoded({ extended: true }));
-app.use(express.static(__dirname+ "/public"));                  //making public a static directory
-app.set("view engine", "ejs");                      //if written no need to write .ejs only write name of file
+app.use(express.static(__dirname+ "/public"));                                  //making public a static directory
+app.set("view engine", "ejs");                                                  //if written no need to write .ejs only write name of file
 
+//MONGOOSE CONFIGURATION
 mongoose.connect('mongodb://localhost:27017/Camps', { useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false }, function (err) {
     if (!err)
         console.log("Database connection successfull");
@@ -23,8 +24,6 @@ mongoose.connect('mongodb://localhost:27017/Camps', { useNewUrlParser: true, use
     else
         console.log("error in DB cnnection" + err);
 });
-
-seedDB();
 
 // PASSPORT CONFIGURATION
 app.use(require("express-session")({
@@ -35,17 +34,22 @@ app.use(require("express-session")({
 
 app.use(passport.initialize());
 app.use(passport.session());
-passport.use(new LocalStrategy(User.authenticate()));       // authentication provided by passport
+passport.use(new LocalStrategy(User.authenticate()));                           // authentication strategy provided by passport JS
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
+// MIDDLEWARE RUNNERS
+seedDB();
+app.use(userPasser);
 
-//ROUTES
+// CAMPGROUND ROUTES
 app.get("/", (req, res)=>{
     res.render("landing");
 });
 
 app.get("/campgrounds", (req,res)=>{
+    // console.log(req.user);                                                   // username and id is provided by passport
+    
     Campground.find({}, (err, campgrounds)=>{
 
         if(err)
@@ -81,7 +85,7 @@ app.post("/campgrounds", (req,res)=>{
     res.redirect("/campgrounds");
 });
 
-app.get("/campgrounds/:id", (req,res)=>{                               // note campgrounds/new matches also to :id 
+app.get("/campgrounds/:id", (req,res)=>{                                        // note campgrounds/new matches also to :id 
     Campground.findById(req.params.id).populate("comments").exec(function(err, foundCampground){     // hence must be defined above
         if(err){
             console.log("error finding camp from DB")
@@ -95,7 +99,7 @@ app.get("/campgrounds/:id", (req,res)=>{                               // note c
 
 });
 
-// Coments routes
+// COMMENT ROUTES
 app.get("/campgrounds/:id/comments/new", isLoggedIn, (req,res)=>{
     Campground.findById(req.params.id, (err, foundCampground)=>{
         if(err)
@@ -135,13 +139,12 @@ app.post("/campgrounds/:id/comments", isLoggedIn, (req,res)=>{
 });
 
 // AUTHENTICATION ROUTES
-
 app.get("/register", (req, res)=>{
     res.render("register");
 });
 
-app.post("/register", (req, res)=>{
-    var newUser= new User({username: req.body.username});
+app.post("/register", (req, res)=>{                                            // passport register used converts password into hash
+    var newUser= new User({username: req.body.username});                      // and passport predefined free authentication
     User.register(newUser, req.body.password, function(err, user){
         if(err){
             console.log("error in adding new user:"+err);
@@ -162,7 +165,7 @@ app.get("/login", (req, res)=>{
     res.render("login");
 });
 
-app.post("/login", passport.authenticate("local", 
+app.post("/login", passport.authenticate("local",                               // passport free authentication procedure
     {
         successRedirect: "/campgrounds",
         failureRedirect: "/login"
@@ -176,9 +179,8 @@ app.get("/logout", (req, res)=>{
     res.redirect("/campgrounds");
 })
 
-// MIDDLEWARE
-
-function isLoggedIn(req, res, next){
+// MIDDLEWARES
+function isLoggedIn(req, res, next){                                            // check user is Logged In or not middleware
     if(req.isAuthenticated())
         return next();
 
@@ -186,7 +188,12 @@ function isLoggedIn(req, res, next){
         res.redirect("/login");
 }
 
-//starting server code..............................
+function userPasser(req, res, next) {                                           // middleware to run before each route hence defined first
+    res.locals.currUser = req.user;                                             // function is to provide currUser to each rendering page
+    next();                                                                     // calls next() then to go to matching route
+}
+
+// STARTING SERVER..............................
 app.listen(3000, function () {
     console.log("Server started");
 });

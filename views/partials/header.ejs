@@ -22,21 +22,29 @@
         </button>
     
         <div class="collapse navbar-collapse" id="navbarText">
-            <ul class="navbar-nav mr-auto">
-            </ul>
+            <ul class="navbar-nav mr-auto"></ul>
     
             <ul class="navbar-nav navbar-right">
-                <li class="nav-item">
-                    <a class="nav-link" href="/register">SignUp</a>
-                </li>
+                
+                <% if(!currUser){ %>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/register">SignUp</a>
+                    </li>
     
-                <li class="nav-item ">
-                    <a class="nav-link" href="/login">Login<span class="sr-only">(current)</span></a>
-                </li>
-    
-                <li class="nav-item">
-                    <a class="nav-link" href="/logout">Logout</a>
-                </li>
+                    <li class="nav-item ">
+                        <a class="nav-link" href="/login">Login<span class="sr-only">(current)</span></a>
+                    </li>
+                
+                <% }else{ %>
+                    <li class="nav-item ">
+                        <a class="nav-link" href="#">signed In As <%= currUser.username %></a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="/logout">Logout</a>
+                    </li>
+                <% } %>
+
             </ul>
         </div>
     </div>
