@@ -4,9 +4,12 @@
 var express = require("express");                                // express() return an object 
 var mongoose = require("mongoose");
 var bodyparser = require("body-parser");
+var passport = require("passport");
+var LocalStrategy = require("passport-local");
 var Campground = require("./models/campground")
 var Comment = require("./models/comment");
-var seedDB= require("./seeds");
+var User = require("./models/user");
+var seedDB = require("./seeds");
 
 var app = express();
 app.use(bodyparser.urlencoded({ extended: true }));
@@ -22,6 +25,20 @@ mongoose.connect('mongodb://localhost:27017/Camps', { useNewUrlParser: true, use
 });
 
 seedDB();
+
+// PASSPORT CONFIGURATION
+app.use(require("express-session")({
+    secret: "this is a good project",
+    resave: false,
+    saveUninitialized: false
+}));
+
+app.use(passport.initialize());
+app.use(passport.session());
+passport.use(new LocalStrategy(User.authenticate()));       // authentication provided by passport
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
+
 
 //ROUTES
 app.get("/", (req, res)=>{
@@ -112,6 +129,30 @@ app.post("/campgrounds/:id/comments", (req,res)=>{
                     foundCampground.save();
                     res.redirect("/campgrounds/" +foundCampground._id);
                 }
+            });
+        }
+    });
+});
+
+// AUTHENTICATION ROUTES
+
+app.get("/register", (req, res)=>{
+    res.render("register");
+});
+
+app.post("/register", (req, res)=>{
+    var newUser= new User({username: req.body.username});
+    User.register(newUser, req.body.password, function(err, user){
+        if(err){
+            console.log("error in adding new user:"+err);
+            return res.render("register");
+        }
+
+        else{
+            console.log("adding user to DB succesfull");
+            
+            passport.authenticate("local")(req, res, function(){
+                res.redirect("/campgrounds");
             });
         }
     });
