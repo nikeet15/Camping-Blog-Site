@@ -52,7 +52,7 @@ function seedDB(){
                         console.log("added a campground")
                         // console.log(newCamp);
 
-                        // add  new comments
+                        // add new comments
                         Comment.create({
                             text: "just a test comment",
                             author: "nikeet"

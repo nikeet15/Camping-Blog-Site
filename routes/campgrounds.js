@@ -22,18 +22,21 @@ router.get("/", (req, res) => {
 });
 
 // show new camp adding page
-router.get("/new", (req, res) => {
+router.get("/new", isLoggedIn, (req, res) => {
     res.render("./campgrounds/new");
 });
 
 // handle new camp adding logic
-router.post("/", (req, res) => {
-    Campground.create({
-        name: req.body.campground.name,
-        image: req.body.campground.image,
-        description: req.body.campground.description
+router.post("/", isLoggedIn, (req, res) => {
+    var name= req.body.campground.name;
+    var image= req.body.campground.image;
+    var desc= req.body.campground.description;
+    var author= {
+        id: req.user._id,
+        username: req.user.username
+    }
 
-    }, (err, newCamp) => {
+    Campground.create({name: name, image: image, description: desc, author: author}, (err, newCamp) => {
         if (err)
             console.log("error in adding camp to DB "+err);
 
@@ -60,5 +63,14 @@ router.get("/:id", (req, res) => {                                        // not
     });
 
 });
+
+//middleware
+function isLoggedIn(req, res, next) {                                            // check user is Logged In or not middleware
+    if (req.isAuthenticated())
+        return next();
+
+    else
+        res.redirect("/login");
+}
 
 module.exports = router;
