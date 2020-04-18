@@ -9,7 +9,7 @@ var Comment = require("../models/comment");
 router.get("/new", isLoggedIn, (req, res) => {
     Campground.findById(req.params.id, (err, foundCampground) => {
         if (err)
-            console.log("error in finding a camp");
+            console.log("error in finding a camp- "+req.params.id+" "+err);
 
         else {
             console.log("found camp- " + foundCampground);
@@ -27,17 +27,24 @@ router.post("/", isLoggedIn, (req, res) => {
 
     Campground.findById(req.params.id, (err, foundCampground) => {
         if (err)
-            console.log("error in finding a camp");
+            console.log("error in finding a camp- " + req.params.id + " " + err);
 
         else {
-            console.log("found camp- ", foundCampground);
+            console.log("found camp- " +foundCampground);
             Comment.create(req.body.comment, function (err, newComment) {
                 if (err)
-                    console.log("error in creating comment");
+                    console.log("error in creating comment in "+foundCampground.name);
 
                 else {
+                    // add username and id to comment
+                    newComment.author.id= req.user._id;
+                    newComment.author.username= req.user.username;
+                    newComment.save();
+
                     foundCampground.comments.push(newComment);
                     foundCampground.save();
+
+                    console.log("added new comment- "+newComment);
                     res.redirect("/campgrounds/" + foundCampground._id);
                 }
             });

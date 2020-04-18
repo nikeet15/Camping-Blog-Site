@@ -44,7 +44,7 @@ passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
 // MIDDLEWARE RUNNERS
-seedDB();
+// seedDB();                                                                    // seed the DB
 app.use(userPasser);
 
 // MIDDLEWARES

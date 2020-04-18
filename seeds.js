@@ -39,9 +39,10 @@ function seedDB(){
             console.log("error occured");
 
         else{
-            console.log("cleared DB");
+            Comment.remove({}, (err)=>{});
+            console.log("cleared campground and comment DB");
             
-            // add new campgrounds
+            //add new campgrounds
             data.forEach(function (seed) {
                 Campground.create(seed, (err, newCamp) => {
                     if (err)
@@ -51,7 +52,7 @@ function seedDB(){
                         console.log("added a campground")
                         // console.log(newCamp);
 
-                        // add comments
+                        // add  new comments
                         Comment.create({
                             text: "just a test comment",
                             author: "nikeet"

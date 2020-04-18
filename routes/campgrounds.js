@@ -12,7 +12,7 @@ router.get("/", (req, res) => {
     Campground.find({}, (err, campgrounds) => {
 
         if (err)
-            console.log("error finding all camps from DB");
+            console.log("error finding all camps from DB "+err);
 
         else {
             console.log("find all camps successfull")
@@ -35,10 +35,10 @@ router.post("/", (req, res) => {
 
     }, (err, newCamp) => {
         if (err)
-            console.log("error in adding to DB");
+            console.log("error in adding camp to DB "+err);
 
         else {
-            console.log("added" + newCamp.name + "to DB");
+            console.log("added " + newCamp.name + " to DB");
             console.log(newCamp);
         }
     });
@@ -50,7 +50,7 @@ router.post("/", (req, res) => {
 router.get("/:id", (req, res) => {                                        // note campgrounds/new matches also to :id 
     Campground.findById(req.params.id).populate("comments").exec(function (err, foundCampground) {     // hence must be defined above
         if (err) {
-            console.log("error finding camp from DB")
+            console.log("error finding "+req.params.id+" from DB "+err)
         }
 
         else {
