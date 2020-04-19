@@ -6,6 +6,7 @@ var mongoose = require("mongoose");
 var bodyparser = require("body-parser");
 var passport = require("passport");
 var LocalStrategy = require("passport-local");
+var methodOverride = require("method-override");
 var Campground = require("./models/campground")
 var Comment = require("./models/comment");
 var User = require("./models/user");
@@ -20,6 +21,7 @@ var app = express();
 app.use(bodyparser.urlencoded({ extended: true }));
 app.use(express.static(__dirname + "/public"));                                  //making public a static directory
 app.set("view engine", "ejs");                                                  //if written no need to write .ejs only write name of file
+app.use(methodOverride("_method"));
 
 //MONGOOSE CONFIGURATION
 mongoose.connect('mongodb://localhost:27017/Camps', { useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false }, function (err) {

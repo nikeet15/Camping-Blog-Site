@@ -22,9 +22,13 @@
                     <h4 class="card-text"><a href=""><%= campground.name %></a></h4>
                     <hr>
                     <p><%= campground.description %></p>
-                    <p>
-                        <em>Submitted By: <strong><%= campground.author.username %></strong></em>
-                    </p>
+                    <p><em>Submitted By: <strong><%= campground.author.username %></strong></em></p>
+
+                    <a class="btn btn-warning" href="/campgrounds/<%= campground._id %>/edit">Edit</a>
+
+                    <form id= "my-delete-form" action="/campgrounds/<%= campground._id %>?_method=DELETE" method="POST">
+                        <button class= "btn btn-danger">Delete</button>
+                    </form>
 
                 </div>
             </div>

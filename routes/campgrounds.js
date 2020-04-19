@@ -64,6 +64,45 @@ router.get("/:id", (req, res) => {                                        // not
 
 });
 
+// render edit campground page
+router.get("/:id/edit", (req, res)=>{
+    Campground.findById(req.params.id, (err, foundCampground)=>{
+        if(err)
+            console.log("error in finding camp "+err);
+            
+        else{
+            console.log("found "+foundCampground);
+            res.render("./campgrounds/edit", {campground: foundCampground});
+        }
+    });
+});
+
+// handle edit campground logic
+router.put("/:id", (req, res)=>{
+    Campground.findByIdAndUpdate(req.params.id, req.body.campground, (err, updatedCamp)=>{
+        if(err){
+            console.log("error in updating camp " + err);
+            res.redirect("/campgrounds");
+        }
+
+        else{
+            console.log("updated camp successfull");;
+            console.log(updatedCamp);
+            res.redirect("/campgrounds/"+req.params.id);
+        }
+    });
+});
+
+// delete campground logic
+router.delete("/:id", (req, res)=>{
+    Campground.findByIdAndRemove(req.params.id, (err,)=>{
+        if(err)
+            console.log("error in deleting camp "+err);
+             
+        res.redirect("/campgrounds");
+    })
+});
+
 //middleware
 function isLoggedIn(req, res, next) {                                            // check user is Logged In or not middleware
     if (req.isAuthenticated())
