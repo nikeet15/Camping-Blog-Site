@@ -19,7 +19,7 @@ var indexRoutes = require("./routes/index");
 
 var app = express();
 app.use(bodyparser.urlencoded({ extended: true }));
-app.use(express.static(__dirname + "/public"));                                  //making public a static directory
+app.use(express.static(__dirname + "/public"));                                 //making public a static directory
 app.set("view engine", "ejs");                                                  //if written no need to write .ejs only write name of file
 app.use(methodOverride("_method"));
 
@@ -49,10 +49,11 @@ passport.deserializeUser(User.deserializeUser());
 // seedDB();                                                                    // seed the DB
 app.use(userPasser);
 
-// MIDDLEWARES
+// MIDDLEWARES                                                                  // NOTE:- req.user is present everywhere except rendering page(.ejs)
+//sending current user to each rendering page                                   // it is provided by passportJS
 function userPasser(req, res, next) {                                           // middleware to run before each route hence defined first
     res.locals.currUser = req.user;                                             // function is to provide currUser to each rendering page
-    next();                                                                     // calls next() then to go to matching route
+    next();                                                                     // calls next() then to go to matching route's callback in stack
 }
 
 // USE ROUTES DEFINED SEPERATELY
