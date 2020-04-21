@@ -7,7 +7,7 @@
     padding: 0;
 }
 
-#my-delete-form{
+.my-delete-form{
     display: inline;
     padding-left: 10px;
 }

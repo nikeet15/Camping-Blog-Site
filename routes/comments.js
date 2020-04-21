@@ -52,7 +52,7 @@ router.post("/", isLoggedIn, (req, res) => {
     });
 });
 
-// edit comment rendering page
+// show editing comment page
 router.get("/:comment_id/edit", (req, res)=>{
     Comment.findById(req.params.comment_id, (err, foundComment)=>{
         if(err)
@@ -81,6 +81,18 @@ router.put("/:comment_id", (req,res)=>{
             console.log("comment updated- "+req.body.comment);
             res.redirect("/campgrounds/" +req.params.id);
         }
+    })
+});
+
+// delete comment logic
+router.delete("/:comment_id", (req, res)=>{
+    Comment.findByIdAndRemove(req.params.comment_id, (err) => {
+        if(err){
+            console.log("error in deleting comment " + err);
+            res.redirect("back");
+        }
+
+        res.redirect("/campgrounds/" +req.params.id);
     })
 });
 

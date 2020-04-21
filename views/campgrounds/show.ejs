@@ -27,7 +27,7 @@
                     <% if(currUser && campground.author.id.equals(currUser._id)){ %>                            <!-- currUser is available in template-->
                         <a class="btn btn-warning" href="/campgrounds/<%= campground._id %>/edit">Edit</a>
 
-                        <form id= "my-delete-form" action="/campgrounds/<%= campground._id %>?_method=DELETE" method="POST">
+                        <form class= "my-delete-form" action="/campgrounds/<%= campground._id %>?_method=DELETE" method="POST">
                             <button class= "btn btn-danger">Delete</button>
                         </form>
                     <% } %>
@@ -50,6 +50,12 @@
                             <p><%= comment.text%></p>
 
                             <a class= "btn btn-sm btn-warning" href="/campgrounds/<%= campground._id %>/comments/<%= comment._id %>/edit">Edit</a>
+                            
+                            <form class="my-delete-form" action="/campgrounds/<%= campground._id %>/comments/<%= comment._id %>?_method=DELETE" method="POST">
+                                <button class="btn btn-sm btn-danger">Delete</button>
+                            </form>
+
+                            <hr>
                         </div>
 
                     </div>
