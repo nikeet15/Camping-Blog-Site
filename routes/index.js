@@ -21,6 +21,7 @@ router.post("/register", (req, res) => {                                        
     var newUser = new User({ username: req.body.username });                      // and passport predefined free authentication
     User.register(newUser, req.body.password, function (err, user) {
         if (err) {
+            req.flash("error", err.message);
             console.log("error in adding new user:" + err);
             return res.render("register");
         }
@@ -29,6 +30,7 @@ router.post("/register", (req, res) => {                                        
             console.log("adding user to DB succesfull");
 
             passport.authenticate("local")(req, res, function () {
+                req.flash("success", "Welcome "+ user.username);
                 res.redirect("/campgrounds");
             });
         }
@@ -48,21 +50,13 @@ router.post("/login", passport.authenticate("local",                            
     }), (req, res) => {
         console.log("login successsfull");
 
-    });
+});
 
 // logout route
 router.get("/logout", (req, res) => {
     req.logout();
+    req.flash("success", "logged out successfully!")
     res.redirect("/campgrounds");
 })
-
-//middleware
-function isLoggedIn(req, res, next) {                                            // check user is Logged In or not middleware
-    if (req.isAuthenticated())
-        return next();
-
-    else
-        res.redirect("/login");
-}
 
 module.exports = router;

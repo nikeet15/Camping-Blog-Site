@@ -45,6 +45,7 @@ router.post("/", middleware.isLoggedIn, (req, res) => {
 
         else {
             console.log("added " + newCamp.name + " to DB");
+            req.flash("success", "added " + newCamp.name + " to DB")
             console.log(newCamp);
         }
     });
@@ -79,12 +80,14 @@ router.put("/:id", middleware.checkCampOwner, (req, res) => {                   
     Campground.findByIdAndUpdate(req.params.id, req.body.campground, (err, updatedCamp)=>{
         if(err){
             console.log("error in updating camp " + err);
+            req.flash("error", err.message);
             res.redirect("/campgrounds");
         }
 
         else{
             console.log("updated camp successfull");;
             console.log(updatedCamp);
+            req.flash("success", "updated " +updatedCamp.name+ " successfully!");
             res.redirect("/campgrounds/"+req.params.id);
         }
     });
@@ -92,10 +95,14 @@ router.put("/:id", middleware.checkCampOwner, (req, res) => {                   
 
 // delete campground logic
 router.delete("/:id", middleware.checkCampOwner, (req, res) => {                           // added authorization of user before edit/delete using middleware
-    Campground.findByIdAndRemove(req.params.id, (err,)=>{
+    Campground.findByIdAndRemove(req.params.id, (err)=>{
         if(err)
-            console.log("error in deleting camp "+err);
-             
+        {
+            console.log("error in deleting camp " + err);
+            req.flash("error", err.message);
+        }
+            
+        req.flash("success", "deleted campground successfully!");
         res.redirect("/campgrounds");
     })
 });
