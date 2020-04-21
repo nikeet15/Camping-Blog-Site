@@ -1,12 +1,15 @@
+
 var express = require("express");
 var router = express.Router({mergeParams: true});                   // mergeParams is used to make :id(provided in prefix) function here 
-                                                                    // and not behave as a constant, but rather a variable
+var middleware = require("../middleware")                           // and not behave as a constant, but rather a variable
+//NOTE- requiring a directory by default requires index.js file, since it is a special file
+
 // REQUIRE MODELS TO USED
 var Campground = require("../models/campground")
 var Comment = require("../models/comment");
 
 // show new comment adding page
-router.get("/new", isLoggedIn, (req, res) => {
+router.get("/new", middleware.isLoggedIn, (req, res) => {
     Campground.findById(req.params.id, (err, foundCampground) => {
         if (err)
             console.log("error in finding a camp- "+req.params.id+" "+err);
@@ -20,7 +23,7 @@ router.get("/new", isLoggedIn, (req, res) => {
 });
 
 // create new comment logic
-router.post("/", isLoggedIn, (req, res) => {
+router.post("/", middleware.isLoggedIn, (req, res) => {
     // create a new comment
     // find campground and push comment to it
     // redirect to campground show page
@@ -53,14 +56,14 @@ router.post("/", isLoggedIn, (req, res) => {
 });
 
 // show editing comment page
-router.get("/:comment_id/edit", checkCommentOwner, (req, res)=>{
+router.get("/:comment_id/edit", middleware.checkCommentOwner, (req, res)=>{
     Comment.findById(req.params.comment_id, (err, foundComment)=>{
             res.render("./comments/edit", {comment: foundComment, campground_id: req.params.id});     
     });
 });
 
 // update comment logic
-router.put("/:comment_id", checkCommentOwner, (req,res)=>{
+router.put("/:comment_id", middleware.checkCommentOwner, (req,res)=>{
     Comment.findByIdAndUpdate(req.params.comment_id, req.body.comment, function(err, updatedComment){
         if(err){
             console.log("error in updating comment");
@@ -75,7 +78,7 @@ router.put("/:comment_id", checkCommentOwner, (req,res)=>{
 });
 
 // delete comment logic
-router.delete("/:comment_id", checkCommentOwner, (req, res)=>{
+router.delete("/:comment_id", middleware.checkCommentOwner, (req, res)=>{
     Comment.findByIdAndRemove(req.params.comment_id, (err) => {
         if(err){
             console.log("error in deleting comment " + err);
@@ -85,43 +88,5 @@ router.delete("/:comment_id", checkCommentOwner, (req, res)=>{
         res.redirect("/campgrounds/" +req.params.id);
     })
 });
-
-//middleware
-function isLoggedIn(req, res, next) {                                            // check user is Logged In or not middleware
-    if (req.isAuthenticated())
-        return next();
-
-    else
-        res.redirect("/login");
-}
-
-// check authorization of user before edit/delete options
-function checkCommentOwner(req, res, next) {                                     // check user is authenticated and owner of camp or not middleware
-    if (req.isAuthenticated()) {                                                 // if yes redirect to next callback 
-        Comment.findById(req.params.comment_id, (err, foundComment) => {         // else redirect to same page
-            if(err) {
-                console.log("error in finding comment " + err);
-                res.redirect("back");                                            // ***IMP ("back") refers to same route
-            }
-
-            else {
-                if (foundComment.author.id.equals(req.user._id)) {              // NOTE---
-                    console.log("found " + foundComment);                       // req.user._id is a- string AND 
-                    next();                                                     // foundCampground.author.id is an- object
-                }                                                               // hence "===" will not work either use "==" OR 
-                                                                                // mongoose predefined function- .equals()
-            else {
-                    console.log("you do not have permission");
-                    res.redirect("back");
-                }
-            }
-        });
-    }
-
-    else {
-        console.log("not logged in");
-        res.redirect("back");
-    }
-}
 
 module.exports = router;
