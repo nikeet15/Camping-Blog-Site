@@ -53,24 +53,14 @@ router.post("/", isLoggedIn, (req, res) => {
 });
 
 // show editing comment page
-router.get("/:comment_id/edit", (req, res)=>{
+router.get("/:comment_id/edit", checkCommentOwner, (req, res)=>{
     Comment.findById(req.params.comment_id, (err, foundComment)=>{
-        if(err)
-        {
-            console.log("error in finding comment from DB");
-            res.redirect("back");
-        }
-            
-        else
-        {
-            console.log("found comment from DB");
             res.render("./comments/edit", {comment: foundComment, campground_id: req.params.id});     
-        }
     });
 });
 
 // update comment logic
-router.put("/:comment_id", (req,res)=>{
+router.put("/:comment_id", checkCommentOwner, (req,res)=>{
     Comment.findByIdAndUpdate(req.params.comment_id, req.body.comment, function(err, updatedComment){
         if(err){
             console.log("error in updating comment");
@@ -85,7 +75,7 @@ router.put("/:comment_id", (req,res)=>{
 });
 
 // delete comment logic
-router.delete("/:comment_id", (req, res)=>{
+router.delete("/:comment_id", checkCommentOwner, (req, res)=>{
     Comment.findByIdAndRemove(req.params.comment_id, (err) => {
         if(err){
             console.log("error in deleting comment " + err);
@@ -103,6 +93,35 @@ function isLoggedIn(req, res, next) {                                           
 
     else
         res.redirect("/login");
+}
+
+// check authorization of user before edit/delete options
+function checkCommentOwner(req, res, next) {                                     // check user is authenticated and owner of camp or not middleware
+    if (req.isAuthenticated()) {                                                 // if yes redirect to next callback 
+        Comment.findById(req.params.comment_id, (err, foundComment) => {         // else redirect to same page
+            if(err) {
+                console.log("error in finding comment " + err);
+                res.redirect("back");                                            // ***IMP ("back") refers to same route
+            }
+
+            else {
+                if (foundComment.author.id.equals(req.user._id)) {              // NOTE---
+                    console.log("found " + foundComment);                       // req.user._id is a- string AND 
+                    next();                                                     // foundCampground.author.id is an- object
+                }                                                               // hence "===" will not work either use "==" OR 
+                                                                                // mongoose predefined function- .equals()
+            else {
+                    console.log("you do not have permission");
+                    res.redirect("back");
+                }
+            }
+        });
+    }
+
+    else {
+        console.log("not logged in");
+        res.redirect("back");
+    }
 }
 
 module.exports = router;

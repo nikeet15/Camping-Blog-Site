@@ -49,11 +49,13 @@
                             <span class= "float-right">10 days ago</span>
                             <p><%= comment.text%></p>
 
-                            <a class= "btn btn-sm btn-warning" href="/campgrounds/<%= campground._id %>/comments/<%= comment._id %>/edit">Edit</a>
+                            <% if(currUser && comment.author.id.equals(currUser._id)){ %>
+                                <a class= "btn btn-sm btn-warning" href="/campgrounds/<%= campground._id %>/comments/<%= comment._id %>/edit">Edit</a>
                             
-                            <form class="my-delete-form" action="/campgrounds/<%= campground._id %>/comments/<%= comment._id %>?_method=DELETE" method="POST">
-                                <button class="btn btn-sm btn-danger">Delete</button>
-                            </form>
+                                <form class="my-delete-form" action="/campgrounds/<%= campground._id %>/comments/<%= comment._id %>?_method=DELETE" method="POST">
+                                    <button class="btn btn-sm btn-danger">Delete</button>
+                                </form>
+                            <% } %>
 
                             <hr>
                         </div>
