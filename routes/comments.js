@@ -52,6 +52,38 @@ router.post("/", isLoggedIn, (req, res) => {
     });
 });
 
+// edit comment rendering page
+router.get("/:comment_id/edit", (req, res)=>{
+    Comment.findById(req.params.comment_id, (err, foundComment)=>{
+        if(err)
+        {
+            console.log("error in finding comment from DB");
+            res.redirect("back");
+        }
+            
+        else
+        {
+            console.log("found comment from DB");
+            res.render("./comments/edit", {comment: foundComment, campground_id: req.params.id});     
+        }
+    });
+});
+
+// update comment logic
+router.put("/:comment_id", (req,res)=>{
+    Comment.findByIdAndUpdate(req.params.comment_id, req.body.comment, function(err, updatedComment){
+        if(err){
+            console.log("error in updating comment");
+            res.redirect("back");
+        }
+
+        else{
+            console.log("comment updated- "+req.body.comment);
+            res.redirect("/campgrounds/" +req.params.id);
+        }
+    })
+});
+
 //middleware
 function isLoggedIn(req, res, next) {                                            // check user is Logged In or not middleware
     if (req.isAuthenticated())
