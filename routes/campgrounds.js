@@ -32,6 +32,7 @@ router.get("/new", middleware.isLoggedIn, (req, res) => {
 // handle new camp adding logic
 router.post("/", middleware.isLoggedIn, (req, res) => {
     var name= req.body.campground.name;
+    var price= req.body.campground.price;
     var image= req.body.campground.image;
     var desc= req.body.campground.description;
     var author= {
@@ -39,7 +40,7 @@ router.post("/", middleware.isLoggedIn, (req, res) => {
         username: req.user.username
     }
 
-    Campground.create({name: name, image: image, description: desc, author: author}, (err, newCamp) => {
+    Campground.create({name: name, price: price, image: image, description: desc, author: author}, (err, newCamp) => {
         if (err)
             console.log("error in adding camp to DB "+err);
 
