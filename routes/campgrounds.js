@@ -65,7 +65,6 @@ router.get("/:id", (req, res) => {                                              
             res.render("./campgrounds/show", { campground: foundCampground });
         }
     });
-
 });
 
 // render edit campground page                                                  // added authorization of user before edit/delete using middleware
@@ -100,6 +99,7 @@ router.delete("/:id", middleware.checkCampOwner, (req, res) => {                
         {
             console.log("error in deleting camp " + err);
             req.flash("error", err.message);
+            res.redirect("back");
         }
             
         req.flash("success", "deleted campground successfully!");

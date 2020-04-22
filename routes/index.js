@@ -23,7 +23,7 @@ router.post("/register", (req, res) => {                                        
         if (err) {
             req.flash("error", err.message);
             console.log("error in adding new user:" + err);
-            return res.render("register");
+            return res.redirect("back");
         }
 
         else {
