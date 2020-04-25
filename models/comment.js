@@ -10,7 +10,9 @@ var commentSchema = new mongoose.Schema({
             ref: "User"
         },
         username: String
-    }
+    },
+
+    created: Date
 });
 
 var Comment = mongoose.model("Comment", commentSchema);
