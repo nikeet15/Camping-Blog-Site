@@ -42,6 +42,7 @@ router.post("/", middleware.isLoggedIn, (req, res) => {
                     // add username and id to comment
                     newComment.author.id= req.user._id;
                     newComment.author.username= req.user.username;
+                    newComment.created= new Date();
                     newComment.save();
 
                     foundCampground.comments.push(newComment);
@@ -73,6 +74,8 @@ router.put("/:comment_id", middleware.checkCommentOwner, (req,res)=>{
         }
 
         else{
+            updatedComment.created= new Date();
+            updatedComment.save();
             console.log("comment updated- "+req.body.comment);
             req.flash("success", "updated comment");
             res.redirect("/campgrounds/" +req.params.id);
